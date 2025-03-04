@@ -1,3 +1,5 @@
+<?php include 'components/header.php'; ?>
+
 <?php 
 
 // 1 - Pouvoir chercher des livres (genre ou nom) via l'API google Books soit avec JS (fetch ou axios) soit cURL
