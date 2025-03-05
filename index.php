@@ -1,6 +1,16 @@
 <?php include 'components/header.php'; ?>
+<div class="w-full h-full flex flex-col items-center pt-8">
 
-<?php 
+    <input type="text" placeholder="Rechercher..." class="bg-gradient-to-r from-white to-zinc-100 border border-zinc-300 rounded-full px-2 py-1 focus:border-zinc-600 outline-none focus:outline-none transition-all">
+
+    <div class="w-full h-full flex justify-center items-center mt-16">
+        <div class="border rounded-lg grid grid-cols-3 gap-x-4 p-6">
+
+        </div>
+    </div>
+</div>
+
+<?php
 
 // 1 - Pouvoir chercher des livres (genre ou nom) via l'API google Books soit avec JS (fetch ou axios) soit cURL
 // 2 - UN système de login et signup pour les Users (si pas login, il peut pas chercher)
