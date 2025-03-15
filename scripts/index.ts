@@ -18,7 +18,9 @@ profileButton?.addEventListener("click", () => {
     let text2: HTMLParagraphElement = document.createElement("p")
     text2.textContent = "- Ne pas contenir de mot choquant"
     let text3: HTMLParagraphElement = document.createElement("p")
-    text3.textContent = "- Contenir au moins 4 caractères"
+    text3.textContent = "- Contenir doit être compris entre 4 et 24 caractères"
+    let text4: HTMLParagraphElement = document.createElement("p")
+    text4.textContent = "- Contenir que des minuscules, majuscules, chiffres ou un/des underscores"
     let subDiv: HTMLDivElement = document.createElement("div")
     subDiv.classList.add("gap-x-2", "flex", "mt-6")
     let input1: HTMLInputElement = document.createElement("input")
@@ -33,7 +35,7 @@ profileButton?.addEventListener("click", () => {
     submit1.addEventListener("click", () => {
         const newUsername = input1.value.trim();
     
-        if (newUsername.length < 4) {
+        if (newUsername.length < 4 && newUsername.length > 24) {
             alert("Le pseudonyme doit contenir au moins 4 caractères.");
             return;
         }
@@ -58,10 +60,11 @@ profileButton?.addEventListener("click", () => {
         .catch(error => console.error("Erreur:", error));
     });
 
-    profileTitle!.textContent = "Profil"
+    profileTitle!.textContent = "Pseudonyme"
     profileContainer?.appendChild(text1)
     profileContainer?.appendChild(text2)
     profileContainer?.appendChild(text3)
+    profileContainer?.appendChild(text4)
     profileContainer?.appendChild(subDiv)
 })
 
@@ -94,6 +97,34 @@ passwordButton?.addEventListener("click", () => {
     submit1.classList.add("rounded-md", "px-2", "py-1", "bg-sky-600", "hover:bg-sky-700", "text-white", "transition-all")
     subDiv.appendChild(input2)
     subDiv.appendChild(submit1)
+
+    submit1.addEventListener("click", () => {
+
+        if (input1.value === input2.value) {
+            const newPassword = input1.value.trim();
+            fetch("../utils/update_profile.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ password_hash: newPassword }),
+                credentials: "same-origin",
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Mot de passe mis à jour !");
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error("Erreur:", error));
+        } else {
+            alert("Les mots de passe ne sont pas identiques.");
+        }
+    });
+
     profileTitle!.textContent = "Mot de passe"
     profileContainer?.appendChild(text1)
     profileContainer?.appendChild(text2)
@@ -119,6 +150,30 @@ mailButton?.addEventListener("click", () => {
     submit1.classList.add("rounded-md", "px-2", "py-1", "bg-sky-600", "hover:bg-sky-700", "text-white", "transition-all")
     subDiv.appendChild(input1)
     subDiv.appendChild(submit1)
+
+    submit1.addEventListener("click", () => {
+        const newEmail = input1.value.trim();
+    
+        fetch("../utils/update_profile.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: newEmail }),
+            credentials: "same-origin",
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Email mis à jour !");
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Erreur:", error));
+    });
+
     profileTitle!.textContent = "Mail"
     profileContainer?.appendChild(text1)
     profileContainer?.appendChild(subDiv)
@@ -138,6 +193,29 @@ ppButton?.addEventListener("click", () => {
     submit1.classList.add("rounded-md", "px-2", "py-1", "bg-sky-600", "hover:bg-sky-700", "text-white", "transition-all")
     subDiv.appendChild(input1)
     subDiv.appendChild(submit1)
+
+    submit1.addEventListener("click", () => {
+        const newPP = input1.value.trim();
+        fetch("../utils/update_profile.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profile_picture: newPP }),
+            credentials: "same-origin",
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Photo de profil mis à jour !");
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Erreur:", error));
+    });
+
     profileTitle!.textContent = "Photo de profil"
     profileContainer?.appendChild(text1)
     profileContainer?.appendChild(subDiv)

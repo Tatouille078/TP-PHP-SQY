@@ -15,7 +15,9 @@ profileButton === null || profileButton === void 0 ? void 0 : profileButton.addE
     var text2 = document.createElement("p");
     text2.textContent = "- Ne pas contenir de mot choquant";
     var text3 = document.createElement("p");
-    text3.textContent = "- Contenir au moins 4 caractères";
+    text3.textContent = "- Contenir doit être compris entre 4 et 24 caractères";
+    var text4 = document.createElement("p");
+    text4.textContent = "- Contenir que des minuscules, majuscules, chiffres ou un/des underscores";
     var subDiv = document.createElement("div");
     subDiv.classList.add("gap-x-2", "flex", "mt-6");
     var input1 = document.createElement("input");
@@ -28,7 +30,7 @@ profileButton === null || profileButton === void 0 ? void 0 : profileButton.addE
     subDiv.appendChild(submit1);
     submit1.addEventListener("click", function () {
         var newUsername = input1.value.trim();
-        if (newUsername.length < 4) {
+        if (newUsername.length < 4 && newUsername.length > 24) {
             alert("Le pseudonyme doit contenir au moins 4 caractères.");
             return;
         }
@@ -52,10 +54,11 @@ profileButton === null || profileButton === void 0 ? void 0 : profileButton.addE
         })
             .catch(function (error) { return console.error("Erreur:", error); });
     });
-    profileTitle.textContent = "Profil";
+    profileTitle.textContent = "Pseudonyme";
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text1);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text2);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text3);
+    profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text4);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);
 });
 passwordButton === null || passwordButton === void 0 ? void 0 : passwordButton.addEventListener("click", function () {
@@ -87,6 +90,33 @@ passwordButton === null || passwordButton === void 0 ? void 0 : passwordButton.a
     submit1.classList.add("rounded-md", "px-2", "py-1", "bg-sky-600", "hover:bg-sky-700", "text-white", "transition-all");
     subDiv.appendChild(input2);
     subDiv.appendChild(submit1);
+    submit1.addEventListener("click", function () {
+        if (input1.value === input2.value) {
+            var newPassword = input1.value.trim();
+            fetch("../utils/update_profile.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ password_hash: newPassword }),
+                credentials: "same-origin",
+            })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                if (data.success) {
+                    alert("Mot de passe mis à jour !");
+                    location.reload();
+                }
+                else {
+                    alert(data.message);
+                }
+            })
+                .catch(function (error) { return console.error("Erreur:", error); });
+        }
+        else {
+            alert("Les mots de passe ne sont pas identiques.");
+        }
+    });
     profileTitle.textContent = "Mot de passe";
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text1);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text2);
@@ -111,6 +141,28 @@ mailButton === null || mailButton === void 0 ? void 0 : mailButton.addEventListe
     submit1.classList.add("rounded-md", "px-2", "py-1", "bg-sky-600", "hover:bg-sky-700", "text-white", "transition-all");
     subDiv.appendChild(input1);
     subDiv.appendChild(submit1);
+    submit1.addEventListener("click", function () {
+        var newEmail = input1.value.trim();
+        fetch("../utils/update_profile.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: newEmail }),
+            credentials: "same-origin",
+        })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+            if (data.success) {
+                alert("Email mis à jour !");
+                location.reload();
+            }
+            else {
+                alert(data.message);
+            }
+        })
+            .catch(function (error) { return console.error("Erreur:", error); });
+    });
     profileTitle.textContent = "Mail";
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text1);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);
@@ -129,6 +181,28 @@ ppButton === null || ppButton === void 0 ? void 0 : ppButton.addEventListener("c
     submit1.classList.add("rounded-md", "px-2", "py-1", "bg-sky-600", "hover:bg-sky-700", "text-white", "transition-all");
     subDiv.appendChild(input1);
     subDiv.appendChild(submit1);
+    submit1.addEventListener("click", function () {
+        var newPP = input1.value.trim();
+        fetch("../utils/update_profile.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profile_picture: newPP }),
+            credentials: "same-origin",
+        })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+            if (data.success) {
+                alert("Photo de profil mis à jour !");
+                location.reload();
+            }
+            else {
+                alert(data.message);
+            }
+        })
+            .catch(function (error) { return console.error("Erreur:", error); });
+    });
     profileTitle.textContent = "Photo de profil";
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text1);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);

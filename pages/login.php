@@ -69,6 +69,7 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
 ?>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <img src="../assets/BiblioClan_logo.png" alt="Logo" class="h-48 object-contain mx-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-sm">
     <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Sign in</h2>
   </div>
@@ -102,6 +103,10 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
       </div>
       
     </form>
+
+    <div class="flex justify-center pt-4">
+      <p>Pas de compte? <a href="signup.php" class="text-sky-600 underline hover:text-sky-800">créer un compte</a></p>
+    </div>
 
     <?php if (isset($error)) : ?>
 
