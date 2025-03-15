@@ -34,23 +34,33 @@
                 <a href="library.php" class="text-xl">Bibliothèque</a>
                 <span class="absolute h-2 bg-gradient-to-r from-zinc-50 to-zinc-300 w-0 group-hover:w-full inset-0 top-6 transition-all duration-[300ms] rounded-xl"></span>
             </div>
-            <span class="w-[2px] h-8 bg-gradient-to-b from-zinc-300 to-zinc-100"></span>
+            <span class="w-[2px] h-8 bg-gradient-to-b from-sky-700 via-sky-50 to-sky-700"></span>
             <div class="relative flex justify-center group cursor-pointer">
                 <p class="text-xl">Favoris</p>
                 <span class="absolute h-2 bg-gradient-to-r from-zinc-50 to-zinc-300 w-0 group-hover:w-full inset-0 top-6 transition-all duration-[300ms] rounded-xl"></span>
             </div>
         </div>
         <div class="relative group">
-            <p class="cursor-pointer border-5 border-transparent bg-sky-700 group-hover:bg-sky-600 transition-all px-2 py-1 rounded-3xl group-hover:border-sky-200 text-xl">Icone du user</p>
-            <div class="absolute inset-0 top-10 h-0 group-hover:h-34 text-black bg-gradient-to-br from-zinc-50 to-zinc-300 border-0 group-hover:border-1 border-transparent group-hover:border-zinc-400 rounded-xl transition-all duration-300 overflow-y-hidden">
+            <?php if (!empty($_SESSION)) : ?>
+                <img src="<?php echo htmlspecialchars($_SESSION['profile_picture'], ENT_QUOTES, 'UTF-8'); ?>" alt="Profil" class="max-w-12 rounded-full">
+                <div class="absolute w-48 inset-0 top-16 -left-[200%] h-0 group-hover:h-34 text-black bg-gradient-to-br from-zinc-50 to-zinc-300 border-0 group-hover:border-1 border-transparent group-hover:border-zinc-400 rounded-xl transition-all duration-300 overflow-y-hidden">
                 <div class="relative m-4 h-0 group-hover:h-full text-end flex flex-col justify-start items-end gap-y-2 text-md">
                     <a href="profil.php" class="text-md">Mon profil</a>
-                    <span class="min-h-[1px] max-h-[1px] w-full bg-gradient-to-r from-zinc-700 to-zinc-900"></span>
+                    <span class="border-b border-zinc-400 h-[0.1px] w-full"></span>
                     <p class="text-md">Mes favories</p>
-                    <span class="min-h-[1px] max-h-[1px] w-full bg-gradient-to-r from-zinc-700 to-zinc-900"></span>
                     <p id="logout" class="text-md cursor-pointer">Déconnection</p>
                 </div>
             </div>
+            <?php else : ?>
+            <img src="https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" alt="dzdz" class="max-w-12 rounded-full">
+            <div class="absolute w-48 inset-0 top-16 -left-[200%] h-0 group-hover:h-24 text-black bg-gradient-to-br from-zinc-50 to-zinc-300 border-0 group-hover:border-1 border-transparent group-hover:border-zinc-400 rounded-xl transition-all duration-300 overflow-y-hidden">
+                <div class="relative m-4 h-0 group-hover:h-full text-end flex flex-col justify-start items-end gap-y-2 text-md">
+                    <a href="login.php" class="text-md">Log in</a>
+                    <span class="border-b border-zinc-400 h-[0.1px] w-full"></span>
+                    <a href="signup.php" class="text-md">S'inscrire</a>
+                </div>
+            </div>
+            <?php endif ?>
         </div>
     </header>
 
