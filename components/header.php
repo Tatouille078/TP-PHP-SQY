@@ -48,7 +48,7 @@
                     <span class="min-h-[1px] max-h-[1px] w-full bg-gradient-to-r from-zinc-700 to-zinc-900"></span>
                     <p class="text-md">Mes favories</p>
                     <span class="min-h-[1px] max-h-[1px] w-full bg-gradient-to-r from-zinc-700 to-zinc-900"></span>
-                    <p id="logout" class="text-md">Déconnection</p>
+                    <p id="logout" class="text-md cursor-pointer">Déconnection</p>
                 </div>
             </div>
         </div>
