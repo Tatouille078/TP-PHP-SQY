@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Import de la police Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -46,6 +47,7 @@
             </div>
         </div>
         <div class="relative group w-64 flex justify-end items-center">
+            <!-- Si l'user est connecté  on affiche certains éléments en plus ou en moins-->
             <?php if (!empty($_SESSION)) : ?>
                 <div class="flex justify-center items-center gap-x-2">
                     <p class="max-w-32 truncate"><?php echo $_SESSION['username'] ?></p>
@@ -62,6 +64,7 @@
                         <p id="logout" class="text-md cursor-pointer">Déconnection</p>
                     </div>
                 </div>
+            <!-- Si il n'est pas connecté -->
             <?php else : ?>
                 <div class="w-12 h-12">
                     <img src="https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" alt="PP" class="w-full h-full object-cover rounded-full">
@@ -77,4 +80,5 @@
         </div>
     </header>
 
-    <div class="h-2 w-full bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-b-xl"></div>
+    <!-- Bordure jolie -->
+    <div class="h-2 w-full bg-gradient-to-r from-indigo-500 to-indigo-700"></div>

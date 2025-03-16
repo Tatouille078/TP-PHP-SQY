@@ -1,16 +1,19 @@
 <?php
 
+// On récupère les informations sur la BDD et la Session
 session_start();
 require_once '../config/pdo.php';
 
+// On vérifie si jamais le user n'est pas connecter
 if (!isset($_SESSION['id'])) {
     echo json_encode(["success" => false, "message" => "Utilisateur non connecté"]);
     exit;
 }
 
-$user_id = $_SESSION['id']; // Récupération de l'ID utilisateur
+$user_id = $_SESSION['id'];
 $data = json_decode(file_get_contents("php://input"), true);
 
+// On vérifie si on veut modifier le username
 if (isset($data['username'])) {
     $username = trim($data['username']);
 
@@ -30,13 +33,14 @@ if (isset($data['username'])) {
     }
 }
 
+// On vérifie si on veut modifier l'email
 if (isset($data['email'])) {
     $email = trim($data['email']);
 
     // Vérification des contraintes
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-        // 6) On vérifie ensuite que le mail n'existe pas déjà en BDD
+        // On vérifie ensuite que le mail n'existe pas déjà en BDD
         $sql = "SELECT * FROM users WHERE email = ?";
 
         $stmt = $pdo->prepare($sql);
@@ -63,10 +67,13 @@ if (isset($data['email'])) {
     }
 }
 
+// On vérifie si on veut modifier la photo de profil
 if (isset($data['profile_picture'])) {
     $profile_picture = trim($data['profile_picture']);
-    // Exemple d'utilisation
+
+    // On vérifie si la photo de profil est corrècte
     if (isValidImage($profile_picture)) {
+
         // Mise à jour dans la base de données
         $stmt = $pdo->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
         if ($stmt->execute([$profile_picture, $user_id])) {
@@ -80,15 +87,19 @@ if (isset($data['profile_picture'])) {
     }
 }
 
+// On vérifie si on veut modifier le mot de passe
 if (isset($data['password_hash'])) {
     $password = trim($data['password_hash']);
     
+    // Vérification des contraintes
     if (!preg_match('/^(?=.*\d)(?=.*[^a-zA-Z0-9_]).{8,}$/', $password)) {
         echo json_encode(["success" => false, "message" => "Mot de passe invalide"]);
         exit;
     }
     
+    // On va créér le hash pour le mot de passe
     $hash = password_hash($password, PASSWORD_DEFAULT);
+    
     // Mise à jour dans la base de données
     $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
     if ($stmt->execute([$hash, $user_id])) {
@@ -99,6 +110,7 @@ if (isset($data['password_hash'])) {
     }
 }
 
+// Fonction qui vérifie si une URL est valide et accessible
 function isValidImage($url) {
     $headers = @get_headers($url); // Récupère les en-têtes HTTP
     if ($headers && strpos($headers[0], '200') !== false) {

@@ -1,14 +1,14 @@
-// const apikey = "AIzaSyAIpFFILMeSTegVWB5jvw-f8VYPDHdz5zA"
-// let url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${input.value}&key=${apiKey}`
-// Partie pour les options de profil
+// Partie Profile
+//Déclaration des variables utiles pour la modification du conteneur des modifications du profil
 var logoutButton = document.getElementById("logout");
-var profileButton = document.querySelector(".profile-button");
+var pseudonymeButton = document.querySelector(".pseudo-button");
 var passwordButton = document.querySelector(".password-button");
 var mailButton = document.querySelector(".mail-button");
 var ppButton = document.querySelector(".pp-button");
 var profileTitle = document.querySelector(".profile-title");
 var profileContainer = document.querySelector(".profile-container");
-profileButton === null || profileButton === void 0 ? void 0 : profileButton.addEventListener("click", function () {
+// Lorsque le bouton "Profile" est cliqué, on affiche le formulaire de modification du profil
+pseudonymeButton === null || pseudonymeButton === void 0 ? void 0 : pseudonymeButton.addEventListener("click", function () {
     profileContainer.innerHTML = "";
     var text1 = document.createElement("p");
     text1.textContent = "Ici vous pouvez modifier votre Pseudonyme. Attention le nom d'utilisateur doit:";
@@ -30,10 +30,12 @@ profileButton === null || profileButton === void 0 ? void 0 : profileButton.addE
     subDiv.appendChild(submit1);
     submit1.addEventListener("click", function () {
         var newUsername = input1.value.trim();
+        // test pour voir si le username respecte les conditions
         if (newUsername.length < 4 && newUsername.length > 24) {
             alert("Le pseudonyme doit contenir au moins 4 caractères.");
             return;
         }
+        // Envoi de la requête au serveur pour modifier le username
         fetch("../utils/update_profile.php", {
             method: "POST",
             headers: {
@@ -61,6 +63,7 @@ profileButton === null || profileButton === void 0 ? void 0 : profileButton.addE
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text4);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);
 });
+// Lorsque le bouton "Mot de passe" est cliqué, on affiche le formulaire de modification du profil
 passwordButton === null || passwordButton === void 0 ? void 0 : passwordButton.addEventListener("click", function () {
     profileContainer.innerHTML = "";
     var text1 = document.createElement("p");
@@ -93,8 +96,10 @@ passwordButton === null || passwordButton === void 0 ? void 0 : passwordButton.a
     subDiv.appendChild(input2);
     subDiv.appendChild(submit1);
     submit1.addEventListener("click", function () {
+        // test pour voir si les 2 password correspondes
         if (input1.value === input2.value) {
             var newPassword = input1.value.trim();
+            // Envoi de la requête au serveur pour modifier le mot de passe
             fetch("../utils/update_profile.php", {
                 method: "POST",
                 headers: {
@@ -129,6 +134,7 @@ passwordButton === null || passwordButton === void 0 ? void 0 : passwordButton.a
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text5);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);
 });
+// Lorsque le bouton "Email" est cliqué, on affiche le formulaire de modification du profil
 mailButton === null || mailButton === void 0 ? void 0 : mailButton.addEventListener("click", function () {
     profileContainer.innerHTML = "";
     var text1 = document.createElement("p");
@@ -145,6 +151,7 @@ mailButton === null || mailButton === void 0 ? void 0 : mailButton.addEventListe
     subDiv.appendChild(submit1);
     submit1.addEventListener("click", function () {
         var newEmail = input1.value.trim();
+        // Envoi de la requête au serveur pour modifier le mail
         fetch("../utils/update_profile.php", {
             method: "POST",
             headers: {
@@ -169,6 +176,7 @@ mailButton === null || mailButton === void 0 ? void 0 : mailButton.addEventListe
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text1);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);
 });
+// Lorsque le bouton "Photo de profil" est cliqué, on affiche le formulaire de modification du profil
 ppButton === null || ppButton === void 0 ? void 0 : ppButton.addEventListener("click", function () {
     profileContainer.innerHTML = "";
     var text1 = document.createElement("p");
@@ -185,6 +193,7 @@ ppButton === null || ppButton === void 0 ? void 0 : ppButton.addEventListener("c
     subDiv.appendChild(submit1);
     submit1.addEventListener("click", function () {
         var newPP = input1.value.trim();
+        // Envoi de la requête au serveur pour modifier la photo de profil
         fetch("../utils/update_profile.php", {
             method: "POST",
             headers: {
@@ -209,6 +218,7 @@ ppButton === null || ppButton === void 0 ? void 0 : ppButton.addEventListener("c
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(text1);
     profileContainer === null || profileContainer === void 0 ? void 0 : profileContainer.appendChild(subDiv);
 });
+// Bouton pour se déconnecter
 logoutButton === null || logoutButton === void 0 ? void 0 : logoutButton.addEventListener("click", function () {
     fetch('../utils/logout.php', {
         method: 'GET',
@@ -223,17 +233,21 @@ logoutButton === null || logoutButton === void 0 ? void 0 : logoutButton.addEven
         console.error('Erreur de déconnexion:', error);
     });
 });
-// Book Part
+// Partie Bibliothèque
 var bookContainer = document.querySelector('.bookContainer');
 var searchInput = document.querySelector('.searchInput');
+// Ici on vient detecter si on a bookContainer dans le html afin de ne pas faire de call API pour rien
 if (bookContainer) {
+    // Fetch par défaut
     fetchBooks();
     searchInput === null || searchInput === void 0 ? void 0 : searchInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
+            // Fetch avec notre recherche
             fetchBooks(searchInput === null || searchInput === void 0 ? void 0 : searchInput.value);
         }
     });
 }
+// Sert à Fetch avec un Titre / Tag, cette fonction renvoie un Array de 10 livres maximum
 function fetchBooks(input) {
     if (input === void 0) { input = "Tintin"; }
     var url = "https://www.googleapis.com/books/v1/volumes?q=intitle:".concat(input, "&key=AIzaSyAIpFFILMeSTegVWB5jvw-f8VYPDHdz5zA");
@@ -242,6 +256,7 @@ function fetchBooks(input) {
         .then(function (data) { displayBooks(data.items); })
         .catch(function (error) { return console.log(error); });
 }
+// Affiche les livres dans le container
 function displayBooks(books) {
     bookContainer.innerHTML = "";
     books.forEach(function (book) {
@@ -262,6 +277,7 @@ function displayBooks(books) {
         favoritButton.classList.add("text-white", "px-4", "py-2", "rounded-md", "bg-sky-600", "hover:bg-sky-700", "transition-all", "mt-2", "cursor-pointer");
         var bookDiv = document.createElement('div');
         bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border", "rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl");
+        //boutton permettant d'ajouter un livre dans les favories
         favoritButton.addEventListener("click", function () {
             fetch("../utils/update_favorites.php", {
                 method: "POST",
@@ -274,11 +290,13 @@ function displayBooks(books) {
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
                 if (data.success) {
+                    // On vient remplacer le bouton par un texte nous disant qu'on a réussi à l'ajouter
                     favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700");
                     favoritButton.classList.add("pointer-events-none", "bg-lime-500", "hover:bg-lime-600");
                     favoritButton.textContent = data.message;
                 }
                 else {
+                    // On vient remplacer le bouton par un texte nous disant qu'on a échoué à l'ajouter
                     favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700");
                     favoritButton.classList.add("pointer-events-none", "bg-red-500", "hover:bg-red-600");
                     favoritButton.textContent = data.message;
@@ -294,14 +312,15 @@ function displayBooks(books) {
         bookContainer.appendChild(bookDiv);
     });
 }
-// Favorites Part
+// Partie Favoris
 var favoritesContainer = document.querySelector(".favoritesContainer");
 if (favoritesContainer) {
+    // Récupérer les favoris lors du chargement de la page
     callFavorites();
 }
 function callFavorites() {
     favoritesContainer.innerHTML = "";
-    // récupérer les books
+    // récupérer les books dans notre table favoris
     fetch("../utils/update_favorites.php", {
         method: "POST",
         headers: {
@@ -313,9 +332,10 @@ function callFavorites() {
         .then(function (response) { return response.json(); })
         .then(function (data) {
         if (data.success) {
-            fetchBookDetails(data.books);
+            fetchAndDisplayBookDetails(data.books);
         }
         else {
+            //Message indiquant qu'on a pas de favoris
             var warningTitle = document.createElement('h1');
             warningTitle.textContent = "Vous n'avez aucun favoris";
             warningTitle.classList.add("font-bold", "text-3xl");
@@ -331,7 +351,8 @@ function callFavorites() {
     })
         .catch(function (error) { return console.error("Erreur lors de la récupération des favoris:", error); });
 }
-function fetchBookDetails(bookIds) {
+// Permet de récupérer les différents books dans l'API afin de les affichers
+function fetchAndDisplayBookDetails(bookIds) {
     bookIds.map(function (bookId) {
         return fetch("https://www.googleapis.com/books/v1/volumes/".concat(bookId))
             .then(function (response) { return response.json(); })
@@ -353,6 +374,7 @@ function fetchBookDetails(bookIds) {
             favoritButton.classList.add("text-white", "px-4", "py-2", "rounded-md", "bg-sky-600", "hover:bg-sky-700", "transition-all", "mt-2", "cursor-pointer");
             var bookDiv = document.createElement('div');
             bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border", "rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl");
+            // Permet de supprimer un favori sur le click
             favoritButton.addEventListener("click", function () {
                 fetch("../utils/update_favorites.php", {
                     method: "POST",

@@ -6,12 +6,6 @@ ob_start();
 include "../components/header.php";
 include "../config/pdo.php";
 
-// ici on va venir vérifier que les données du form sont bien conformes (Une fois le form soumis)
-// Si un des champs n'est pas rempli on affiche une erreur 
-// Si l'email n'est pas au bon format on affiche une erreur
-
-// Une fois les infos récupérées on créé les variables adéquates 
-
 // On vérifie que le form ait bien été soumois avec POST
 if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
 
@@ -30,9 +24,13 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
         // On vient fetch (récupérer) les éventuels résultats 
         $result = $stmt->fetch();
 
+        //Si on récupère les informations donc le user existe
         if ($result) {
+
+            // on vérifie le mot de passe
             $password_hash = $result["password_hash"];
 
+            // Si le password et le hash sont correct:
             if (password_verify($password, $password_hash)) {
 
                 // On démarre une session
@@ -62,7 +60,6 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
         $error = "Veuillez remplir tous les champs";
     }
 }
-
 
 ?>
 
@@ -107,7 +104,7 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
     </div>
 
     <?php if (isset($error)) : ?>
-
+        <!-- s'il y a une erreur -->
         <p class="text-red-700"><?= $error ?></p>
 
     <?php endif ?>

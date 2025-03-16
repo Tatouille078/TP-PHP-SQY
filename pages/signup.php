@@ -13,49 +13,61 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
   // 2) On vient vérifier que tous les champs soient remplis
   if (!empty($_POST["username"]) && !empty($_POST["email"]) && !empty($_POST["password"]) && !empty($_POST["confirm-password"])) {
 
-    // 3) On check ensuite que le mdp et la confirmation soient identiques 
-    if ($_POST["password"] === $_POST["confirm-password"]) {
+    if (strlen($username) > 4 && strlen($username) < 24 || preg_match('/[^a-zA-Z0-9_]/', $username)) {
+    
 
-      // 4) On vient vérifier les données que l'on récupère (pas de caractères soucieux sur le username et que l'email soit bien un email - filter_var)
-      $username = htmlspecialchars($_POST["username"]);
-      $email = $_POST["email"];
-      $password = $_POST["password"];
+      // 3) On check ensuite que le mdp et la confirmation soient identiques 
+      if ($_POST["password"] === $_POST["confirm-password"]) {
 
-      // 5) Je vérifie que l'email est bien au bon format sinon erreur
-      if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // On vérifie si le mot de passe rentre dans les contraintes
+        if (preg_match('/^(?=.*\d)(?=.*[^a-zA-Z0-9_]).{8,}$/', $_POST["password"])) {
+        
+          // 4) On vient vérifier les données que l'on récupère (pas de caractères soucieux sur le username et que l'email soit bien un email - filter_var)
+          $username = htmlspecialchars($_POST["username"]);
+          $email = $_POST["email"];
+          $password = $_POST["password"];
 
-        // 6) On vérifie ensuite que le mail n'existe pas déjà en BDD
-        $sql = "SELECT * FROM users WHERE email = ?";
+          // 5) Je vérifie que l'email est bien au bon format sinon erreur
+          if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
+            // 6) On vérifie ensuite que le mail n'existe pas déjà en BDD
+            $sql = "SELECT * FROM users WHERE email = ?";
 
-        // Si on ne récupère de user depuis la BDD c'est que l'email n'est pas utilisé
-        if (!$user) {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
 
-          // On va créér le hash pour le mot de passe
-          $hash = password_hash($password, PASSWORD_DEFAULT);
+            // Si on ne récupère de user depuis la BDD c'est que l'email n'est pas utilisé
+            if (!$user) {
 
-          // On insère le nouveau user en BDD 
-          $sql = "INSERT INTO users(username, password_hash, email) VALUES(?, ?, ?)";
+              // On va créér le hash pour le mot de passe
+              $hash = password_hash($password, PASSWORD_DEFAULT);
 
-          $stmt = $pdo->prepare($sql);
-          $stmt->execute([$username, $hash, $email]);
+              // On insère le nouveau user en BDD 
+              $sql = "INSERT INTO users(username, password_hash, email) VALUES(?, ?, ?)";
 
-          // Si tout va bien on redirige vers le login
-          header("Location: login.php");
+              $stmt = $pdo->prepare($sql);
+              $stmt->execute([$username, $hash, $email]);
 
-          ob_flush();
+              // Si tout va bien on redirige vers le login
+              header("Location: login.php");
 
+              ob_flush();
+
+            } else {
+              $error = "L'email est déjà utilisé";
+            }
+          } else {
+            $error = "L'email n'est pas au bon format";
+          }
         } else {
-          $error = "L'email est déjà utilisé";
+          $error = "Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre";
         }
       } else {
-        $error = "L'email n'est pas au bon format";
+        $error = "Les mots de passe sont différents";
       }
     } else {
-      $error = "Les mots de passe sont différents";
+      $error = "Le pseudo doit contenir entre 5 et 24 caractères et ne peut contenir que des lettres, des chiffres et des underscores";
     }
   } else {
     $error = "Veuillez remplir tous les champs";
@@ -126,7 +138,7 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
     <?php if (isset($error)): ?>
 
       <div class="pt-1 flex justify-center">
-        <p class="text-red-700"><?= $error ?></p>
+        <p class="text-red-700 max-w-[700px]"><?= $error ?></p>
       </div>
 
     <?php endif ?>

@@ -6,7 +6,7 @@ include '../components/header.php';
 
 <div class="w-full h-full min-h-screen flex flex-col items-center pt-8 bg-zinc-100">
     
-    <!-- Si connecté : -->
+    <!-- Si connecté on affiche les favoris: -->
     <?php if (!empty($_SESSION)): ?>
 
     <div class="w-full h-full flex justify-center items-center mt-16">

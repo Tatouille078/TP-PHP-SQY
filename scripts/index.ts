@@ -1,17 +1,16 @@
-// const apikey = "AIzaSyAIpFFILMeSTegVWB5jvw-f8VYPDHdz5zA"
+// Partie Profile
 
-// let url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${input.value}&key=${apiKey}`
-
-// Partie pour les options de profil
+//Déclaration des variables utiles pour la modification du conteneur des modifications du profil
 let logoutButton: HTMLElement | null = document.getElementById("logout")
-let profileButton: HTMLParagraphElement | null = document.querySelector(".profile-button")
+let pseudonymeButton: HTMLParagraphElement | null = document.querySelector(".pseudo-button")
 let passwordButton: HTMLParagraphElement | null = document.querySelector(".password-button")
 let mailButton: HTMLParagraphElement | null = document.querySelector(".mail-button")
 let ppButton: HTMLParagraphElement | null = document.querySelector(".pp-button")
 let profileTitle: HTMLParagraphElement | null = document.querySelector(".profile-title")
 let profileContainer: HTMLDivElement | null = document.querySelector(".profile-container")
 
-profileButton?.addEventListener("click", () => {
+// Lorsque le bouton "Profile" est cliqué, on affiche le formulaire de modification du profil
+pseudonymeButton?.addEventListener("click", () => {
     profileContainer!.innerHTML = ""
     let text1: HTMLParagraphElement = document.createElement("p")
     text1.textContent = "Ici vous pouvez modifier votre Pseudonyme. Attention le nom d'utilisateur doit:"
@@ -34,12 +33,12 @@ profileButton?.addEventListener("click", () => {
 
     submit1.addEventListener("click", () => {
         const newUsername = input1.value.trim();
-    
+        // test pour voir si le username respecte les conditions
         if (newUsername.length < 4 && newUsername.length > 24) {
             alert("Le pseudonyme doit contenir au moins 4 caractères.");
             return;
         }
-    
+        // Envoi de la requête au serveur pour modifier le username
         fetch("../utils/update_profile.php", {
             method: "POST",
             headers: {
@@ -68,6 +67,7 @@ profileButton?.addEventListener("click", () => {
     profileContainer?.appendChild(subDiv)
 })
 
+// Lorsque le bouton "Mot de passe" est cliqué, on affiche le formulaire de modification du profil
 passwordButton?.addEventListener("click", () => {
     profileContainer!.innerHTML = ""
     let text1: HTMLParagraphElement = document.createElement("p")
@@ -101,9 +101,12 @@ passwordButton?.addEventListener("click", () => {
     subDiv.appendChild(submit1)
 
     submit1.addEventListener("click", () => {
-
+        
+        // test pour voir si les 2 password correspondes
         if (input1.value === input2.value) {
             const newPassword = input1.value.trim();
+
+            // Envoi de la requête au serveur pour modifier le mot de passe
             fetch("../utils/update_profile.php", {
                 method: "POST",
                 headers: {
@@ -138,6 +141,7 @@ passwordButton?.addEventListener("click", () => {
     profileContainer?.appendChild(subDiv)
 })
 
+// Lorsque le bouton "Email" est cliqué, on affiche le formulaire de modification du profil
 mailButton?.addEventListener("click", () => {
     profileContainer!.innerHTML = ""
     let text1: HTMLParagraphElement = document.createElement("p")
@@ -155,7 +159,8 @@ mailButton?.addEventListener("click", () => {
 
     submit1.addEventListener("click", () => {
         const newEmail = input1.value.trim();
-    
+
+        // Envoi de la requête au serveur pour modifier le mail
         fetch("../utils/update_profile.php", {
             method: "POST",
             headers: {
@@ -181,6 +186,7 @@ mailButton?.addEventListener("click", () => {
     profileContainer?.appendChild(subDiv)
 })
 
+// Lorsque le bouton "Photo de profil" est cliqué, on affiche le formulaire de modification du profil
 ppButton?.addEventListener("click", () => {
     profileContainer!.innerHTML = ""
     let text1: HTMLParagraphElement = document.createElement("p")
@@ -198,6 +204,8 @@ ppButton?.addEventListener("click", () => {
 
     submit1.addEventListener("click", () => {
         const newPP = input1.value.trim();
+
+        // Envoi de la requête au serveur pour modifier la photo de profil
         fetch("../utils/update_profile.php", {
             method: "POST",
             headers: {
@@ -223,6 +231,7 @@ ppButton?.addEventListener("click", () => {
     profileContainer?.appendChild(subDiv)
 })
 
+// Bouton pour se déconnecter
 logoutButton?.addEventListener("click", () => {
     fetch('../utils/logout.php', {
         method: 'GET',
@@ -238,20 +247,24 @@ logoutButton?.addEventListener("click", () => {
     });
 })
 
-// Book Part
+// Partie Bibliothèque
 
 let bookContainer: HTMLDivElement | null = document.querySelector('.bookContainer');
 let searchInput: HTMLInputElement | null = document.querySelector('.searchInput');
 
+// Ici on vient detecter si on a bookContainer dans le html afin de ne pas faire de call API pour rien
 if (bookContainer) {
+    // Fetch par défaut
     fetchBooks()
     searchInput?.addEventListener("keypress", (event) => {
         if (event.key === "Enter") {
+            // Fetch avec notre recherche
             fetchBooks(searchInput?.value);
         }
     })
 }
 
+// Sert à Fetch avec un Titre / Tag, cette fonction renvoie un Array de 10 livres maximum
 function fetchBooks(input: String = "Tintin") {
      let url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${input}&key=AIzaSyAIpFFILMeSTegVWB5jvw-f8VYPDHdz5zA`
      fetch(url)
@@ -260,6 +273,7 @@ function fetchBooks(input: String = "Tintin") {
      .catch(error => console.log(error));
 }
 
+// Affiche les livres dans le container
 function displayBooks(books: any[]) {
     bookContainer!.innerHTML = "";
     books.forEach(book => {
@@ -280,6 +294,7 @@ function displayBooks(books: any[]) {
         let bookDiv: HTMLDivElement = document.createElement('div');
         bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border" ,"rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl")
         
+        //boutton permettant d'ajouter un livre dans les favories
         favoritButton.addEventListener("click", () => {
             fetch("../utils/update_favorites.php", {
                 method: "POST",
@@ -292,10 +307,12 @@ function displayBooks(books: any[]) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // On vient remplacer le bouton par un texte nous disant qu'on a réussi à l'ajouter
                     favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700")
                     favoritButton.classList.add("pointer-events-none", "bg-lime-500", "hover:bg-lime-600")
                     favoritButton.textContent = data.message
                 } else {
+                    // On vient remplacer le bouton par un texte nous disant qu'on a échoué à l'ajouter
                     favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700")
                     favoritButton.classList.add("pointer-events-none", "bg-red-500", "hover:bg-red-600")
                     favoritButton.textContent = data.message
@@ -313,17 +330,18 @@ function displayBooks(books: any[]) {
 }
 
 
-// Favorites Part
+// Partie Favoris
 let favoritesContainer = document.querySelector(".favoritesContainer")
 
 if (favoritesContainer) {
+    // Récupérer les favoris lors du chargement de la page
     callFavorites();
 }
 
 function callFavorites() {
     favoritesContainer!.innerHTML = "";
 
-    // récupérer les books
+    // récupérer les books dans notre table favoris
     fetch("../utils/update_favorites.php", {
         method: "POST",
         headers: {
@@ -335,8 +353,9 @@ function callFavorites() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fetchBookDetails(data.books);
+            fetchAndDisplayBookDetails(data.books);
         } else {
+            //Message indiquant qu'on a pas de favoris
             let warningTitle: HTMLParagraphElement = document.createElement('h1');
             warningTitle.textContent = "Vous n'avez aucun favoris";
             warningTitle.classList.add("font-bold", "text-3xl")
@@ -353,7 +372,8 @@ function callFavorites() {
     .catch(error => console.error("Erreur lors de la récupération des favoris:", error));
 }
 
-function fetchBookDetails(bookIds) {
+// Permet de récupérer les différents books dans l'API afin de les affichers
+function fetchAndDisplayBookDetails(bookIds) {
     bookIds.map(bookId => 
         fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
         .then(response => response.json())
@@ -375,6 +395,7 @@ function fetchBookDetails(bookIds) {
             let bookDiv: HTMLDivElement = document.createElement('div');
             bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border" ,"rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl")
             
+            // Permet de supprimer un favori sur le click
             favoritButton.addEventListener("click", () => {
                 fetch("../utils/update_favorites.php", {
                     method: "POST",

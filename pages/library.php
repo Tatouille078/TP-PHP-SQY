@@ -6,7 +6,7 @@ include '../components/header.php';
 
 <div class="w-full h-full min-h-screen flex flex-col items-center pt-8 bg-zinc-100">
     
-    <!-- Si connecté : -->
+    <!-- Si connecté on fait la requetes API nécessaire et on vient l'afficher -->
     <?php if (!empty($_SESSION)): ?>
 
     <input type="text" placeholder="Rechercher..." class="bg-gradient-to-r from-white to-zinc-100 border border-zinc-400 rounded-xl px-2 py-1 focus:border-zinc-600 outline-none focus:outline-none transition-all searchInput">

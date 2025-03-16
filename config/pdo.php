@@ -17,8 +17,6 @@ try {
     // Ici on vient se connecter à la BDD en créant un objet $pdo
     $pdo = new PDO($dsn, $username, $password, $options);
 
-    // echo "Nous sommes connectés youhou !";
-
 } catch (PDOException $error) {
 
     // Si la connexion échoue on affiche un message d'erreur avec l'erreur en question
