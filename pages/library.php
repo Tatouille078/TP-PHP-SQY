@@ -4,15 +4,15 @@ include '../components/header.php';
 
 ?>
 
-<div class="w-full h-full flex flex-col items-center pt-8">
+<div class="w-full h-full min-h-screen flex flex-col items-center pt-8 bg-zinc-100">
     
     <!-- Si connecté : -->
     <?php if (!empty($_SESSION)): ?>
 
-    <input type="text" placeholder="Rechercher..." class="bg-gradient-to-r from-white to-zinc-100 border border-zinc-300 rounded-full px-2 py-1 focus:border-zinc-600 outline-none focus:outline-none transition-all">
+    <input type="text" placeholder="Rechercher..." class="bg-gradient-to-r from-white to-zinc-100 border border-zinc-400 rounded-xl px-2 py-1 focus:border-zinc-600 outline-none focus:outline-none transition-all searchInput">
 
     <div class="w-full h-full flex justify-center items-center mt-16">
-        <div class="border rounded-lg grid grid-cols-3 gap-x-4 p-6">
+        <div class="rounded-lg grid grid-cols-3 gap-4 p-6 bookContainer">
 
         </div>
     </div>

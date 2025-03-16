@@ -13,8 +13,11 @@ include "../components/header.php";
             <p class="pp-button py-4 hover:bg-zinc-300 bg-transparent w-full pl-4 border-y border-transparent hover:border-zinc-400 transition-all cursor-pointer">Photo de profil</p>
         </div>
         <div class="col-span-2 flex flex-col w-full py-4 pr-4">
-            <h1 class="profile-title w-full font-bold text-center h-12 text-2xl">Pseudonyme</h1>
-            <div class="text-md profile-container p-6 flex flex-col "></div>
+            <h1 class="profile-title w-full font-bold text-center h-12 text-2xl">Profil</h1>
+            <div class="text-md profile-container p-6 flex flex-col">
+                <p>Votre espace profil.</p>
+                <p>En cliquant sur les menus de gauche vous pouvez modifier vos informations.</p>
+            </div>
         </div>
     </div>
 </div>

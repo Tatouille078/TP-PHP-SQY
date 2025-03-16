@@ -57,8 +57,6 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
         } else {
             $error = "Aucun utilisateur trouvé avec cette email";
         }
-        // }
-
         // Si jamais des champs sont laissés vides ...
     } else {
         $error = "Veuillez remplir tous les champs";

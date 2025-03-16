@@ -81,9 +81,11 @@ passwordButton === null || passwordButton === void 0 ? void 0 : passwordButton.a
     subDiv.classList.add("gap-x-2", "flex", "mt-2");
     var input1 = document.createElement("input");
     input1.placeholder = "Nouveau mdp...";
+    input1.type = "password";
     input1.classList.add("rounded-md", "px-2", "py-1", "w-[219px]", "border", "border-zinc-400", "mt-2", "transition-all", "hover:border-zinc-700", "focus:border-zinc-900", "outline-none");
     var input2 = document.createElement("input");
     input2.placeholder = "Confirmation mdp...";
+    input2.type = "password";
     input2.classList.add("rounded-md", "px-2", "py-1", "min-w-20", "border", "border-zinc-400", "transition-all", "hover:border-zinc-700", "focus:border-zinc-900", "outline-none");
     var submit1 = document.createElement("button");
     submit1.textContent = "Enregistrer";
@@ -221,3 +223,163 @@ logoutButton === null || logoutButton === void 0 ? void 0 : logoutButton.addEven
         console.error('Erreur de déconnexion:', error);
     });
 });
+// Book Part
+var bookContainer = document.querySelector('.bookContainer');
+var searchInput = document.querySelector('.searchInput');
+if (bookContainer) {
+    fetchBooks();
+    searchInput === null || searchInput === void 0 ? void 0 : searchInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            fetchBooks(searchInput === null || searchInput === void 0 ? void 0 : searchInput.value);
+        }
+    });
+}
+function fetchBooks(input) {
+    if (input === void 0) { input = "Tintin"; }
+    var url = "https://www.googleapis.com/books/v1/volumes?q=intitle:".concat(input, "&key=AIzaSyAIpFFILMeSTegVWB5jvw-f8VYPDHdz5zA");
+    fetch(url)
+        .then(function (response) { return response.json(); })
+        .then(function (data) { displayBooks(data.items); })
+        .catch(function (error) { return console.log(error); });
+}
+function displayBooks(books) {
+    bookContainer.innerHTML = "";
+    books.forEach(function (book) {
+        var _a, _b;
+        var bookTitle = document.createElement('p');
+        bookTitle.textContent = book.volumeInfo.title;
+        bookTitle.classList.add("font-bold", "text-xl", "truncate", "max-w-full", "underline");
+        var bookAuthor = document.createElement('p');
+        bookAuthor.textContent = ((_a = book.volumeInfo.authors) === null || _a === void 0 ? void 0 : _a.join(', ')) || "Aucun auteur";
+        bookAuthor.classList.add("max-w-full", "truncate");
+        var coverDiv = document.createElement('div');
+        coverDiv.classList.add("w-56", "h-64");
+        var bookCover = document.createElement('img');
+        bookCover.src = ((_b = book.volumeInfo.imageLinks) === null || _b === void 0 ? void 0 : _b.thumbnail) || "https://via.placeholder.com/150";
+        bookCover.classList.add('w-full', "h-full", 'object-cover');
+        var favoritButton = document.createElement("p");
+        favoritButton.textContent = "Ajouter aux favoris";
+        favoritButton.classList.add("text-white", "px-4", "py-2", "rounded-md", "bg-sky-600", "hover:bg-sky-700", "transition-all", "mt-2", "cursor-pointer");
+        var bookDiv = document.createElement('div');
+        bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border", "rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl");
+        favoritButton.addEventListener("click", function () {
+            fetch("../utils/update_favorites.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ addFavorite: book.id }),
+                credentials: "same-origin",
+            })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                if (data.success) {
+                    favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700");
+                    favoritButton.classList.add("pointer-events-none", "bg-lime-500", "hover:bg-lime-600");
+                    favoritButton.textContent = data.message;
+                }
+                else {
+                    favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700");
+                    favoritButton.classList.add("pointer-events-none", "bg-red-500", "hover:bg-red-600");
+                    favoritButton.textContent = data.message;
+                }
+            })
+                .catch(function (error) { return console.error("Erreur:", error); });
+        });
+        coverDiv.appendChild(bookCover);
+        bookDiv.appendChild(bookTitle);
+        bookDiv.appendChild(coverDiv);
+        bookDiv.appendChild(bookAuthor);
+        bookDiv.appendChild(favoritButton);
+        bookContainer.appendChild(bookDiv);
+    });
+}
+// Favorites Part
+var favoritesContainer = document.querySelector(".favoritesContainer");
+if (favoritesContainer) {
+    callFavorites();
+}
+function callFavorites() {
+    favoritesContainer.innerHTML = "";
+    // récupérer les books
+    fetch("../utils/update_favorites.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ requestFavorites: true }),
+        credentials: "same-origin",
+    })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+        if (data.success) {
+            fetchBookDetails(data.books);
+        }
+        else {
+            var warningTitle = document.createElement('h1');
+            warningTitle.textContent = "Vous n'avez aucun favoris";
+            warningTitle.classList.add("font-bold", "text-3xl");
+            var subTitle = document.createElement('p');
+            subTitle.textContent = "Retourner dans 'Bibliothèque' pour commencer à ajouter des livres. 😀";
+            subTitle.classList.add("text-xl");
+            var subDiv = document.createElement('div');
+            subDiv.classList.add("flex", "flex-col", "gap-y-3", "justify-center", "items-center", "mx-auto", "text-center", "col-span-3");
+            subDiv.appendChild(warningTitle);
+            subDiv.appendChild(subTitle);
+            favoritesContainer.appendChild(subDiv);
+        }
+    })
+        .catch(function (error) { return console.error("Erreur lors de la récupération des favoris:", error); });
+}
+function fetchBookDetails(bookIds) {
+    bookIds.map(function (bookId) {
+        return fetch("https://www.googleapis.com/books/v1/volumes/".concat(bookId))
+            .then(function (response) { return response.json(); })
+            .then(function (book) {
+            var _a, _b;
+            var bookTitle = document.createElement('p');
+            bookTitle.textContent = book.volumeInfo.title;
+            bookTitle.classList.add("font-bold", "text-xl", "truncate", "max-w-full", "underline");
+            var bookAuthor = document.createElement('p');
+            bookAuthor.textContent = ((_a = book.volumeInfo.authors) === null || _a === void 0 ? void 0 : _a.join(', ')) || "Aucun auteur";
+            bookAuthor.classList.add("max-w-full", "truncate");
+            var coverDiv = document.createElement('div');
+            coverDiv.classList.add("w-56", "h-64");
+            var bookCover = document.createElement('img');
+            bookCover.src = ((_b = book.volumeInfo.imageLinks) === null || _b === void 0 ? void 0 : _b.thumbnail) || "https://via.placeholder.com/150";
+            bookCover.classList.add('w-full', "h-full", 'object-cover');
+            var favoritButton = document.createElement("p");
+            favoritButton.textContent = "Enlever des favoris";
+            favoritButton.classList.add("text-white", "px-4", "py-2", "rounded-md", "bg-sky-600", "hover:bg-sky-700", "transition-all", "mt-2", "cursor-pointer");
+            var bookDiv = document.createElement('div');
+            bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border", "rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl");
+            favoritButton.addEventListener("click", function () {
+                fetch("../utils/update_favorites.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ removeFavorite: book.id }),
+                    credentials: "same-origin",
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                    if (data.success) {
+                        location.reload();
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                })
+                    .catch(function (error) { return console.error("Erreur:", error); });
+            });
+            coverDiv.appendChild(bookCover);
+            bookDiv.appendChild(bookTitle);
+            bookDiv.appendChild(coverDiv);
+            bookDiv.appendChild(bookAuthor);
+            bookDiv.appendChild(favoritButton);
+            favoritesContainer.appendChild(bookDiv);
+        })
+            .catch(function (error) { return console.log(error); });
+    });
+}

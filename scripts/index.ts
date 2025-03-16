@@ -3,13 +3,13 @@
 // let url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${input.value}&key=${apiKey}`
 
 // Partie pour les options de profil
-const logoutButton: HTMLElement | null = document.getElementById("logout")
-const profileButton: HTMLParagraphElement | null = document.querySelector(".profile-button")
-const passwordButton: HTMLParagraphElement | null = document.querySelector(".password-button")
-const mailButton: HTMLParagraphElement | null = document.querySelector(".mail-button")
-const ppButton: HTMLParagraphElement | null = document.querySelector(".pp-button")
-const profileTitle: HTMLParagraphElement | null = document.querySelector(".profile-title")
-const profileContainer: HTMLDivElement | null = document.querySelector(".profile-container")
+let logoutButton: HTMLElement | null = document.getElementById("logout")
+let profileButton: HTMLParagraphElement | null = document.querySelector(".profile-button")
+let passwordButton: HTMLParagraphElement | null = document.querySelector(".password-button")
+let mailButton: HTMLParagraphElement | null = document.querySelector(".mail-button")
+let ppButton: HTMLParagraphElement | null = document.querySelector(".pp-button")
+let profileTitle: HTMLParagraphElement | null = document.querySelector(".profile-title")
+let profileContainer: HTMLDivElement | null = document.querySelector(".profile-container")
 
 profileButton?.addEventListener("click", () => {
     profileContainer!.innerHTML = ""
@@ -88,9 +88,11 @@ passwordButton?.addEventListener("click", () => {
     subDiv.classList.add("gap-x-2", "flex", "mt-2")
     let input1: HTMLInputElement = document.createElement("input")
     input1.placeholder = "Nouveau mdp..."
+    input1.type = "password"
     input1.classList.add("rounded-md", "px-2", "py-1", "w-[219px]", "border", "border-zinc-400", "mt-2", "transition-all", "hover:border-zinc-700", "focus:border-zinc-900", "outline-none")
     let input2: HTMLInputElement = document.createElement("input")
     input2.placeholder = "Confirmation mdp..."
+    input2.type = "password"
     input2.classList.add("rounded-md", "px-2", "py-1", "min-w-20", "border", "border-zinc-400", "transition-all", "hover:border-zinc-700", "focus:border-zinc-900", "outline-none")
     let submit1: HTMLButtonElement = document.createElement("button")
     submit1.textContent = "Enregistrer"
@@ -235,3 +237,170 @@ logoutButton?.addEventListener("click", () => {
         console.error('Erreur de déconnexion:', error);
     });
 })
+
+// Book Part
+
+let bookContainer: HTMLDivElement | null = document.querySelector('.bookContainer');
+let searchInput: HTMLInputElement | null = document.querySelector('.searchInput');
+
+if (bookContainer) {
+    fetchBooks()
+    searchInput?.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+            fetchBooks(searchInput?.value);
+        }
+    })
+}
+
+function fetchBooks(input: String = "Tintin") {
+     let url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${input}&key=AIzaSyAIpFFILMeSTegVWB5jvw-f8VYPDHdz5zA`
+     fetch(url)
+     .then(response => response.json())
+     .then(data => {displayBooks(data.items)})
+     .catch(error => console.log(error));
+}
+
+function displayBooks(books: any[]) {
+    bookContainer!.innerHTML = "";
+    books.forEach(book => {
+        let bookTitle: HTMLParagraphElement = document.createElement('p');
+        bookTitle.textContent = book.volumeInfo.title;
+        bookTitle.classList.add("font-bold", "text-xl", "truncate", "max-w-full", "underline")
+        let bookAuthor: HTMLParagraphElement = document.createElement('p');
+        bookAuthor.textContent = book.volumeInfo.authors?.join(', ') || "Aucun auteur";
+        bookAuthor.classList.add("max-w-full", "truncate",)
+        let coverDiv: HTMLDivElement = document.createElement('div');
+        coverDiv.classList.add("w-56", "h-64");
+        let bookCover: HTMLImageElement = document.createElement('img');
+        bookCover.src = book.volumeInfo.imageLinks?.thumbnail || "https://via.placeholder.com/150";
+        bookCover.classList.add('w-full', "h-full", 'object-cover');
+        let favoritButton: HTMLParagraphElement = document.createElement("p")
+        favoritButton.textContent = "Ajouter aux favoris";
+        favoritButton.classList.add("text-white", "px-4", "py-2", "rounded-md", "bg-sky-600", "hover:bg-sky-700", "transition-all", "mt-2", "cursor-pointer");
+        let bookDiv: HTMLDivElement = document.createElement('div');
+        bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border" ,"rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl")
+        
+        favoritButton.addEventListener("click", () => {
+            fetch("../utils/update_favorites.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ addFavorite: book.id }),
+                credentials: "same-origin",
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700")
+                    favoritButton.classList.add("pointer-events-none", "bg-lime-500", "hover:bg-lime-600")
+                    favoritButton.textContent = data.message
+                } else {
+                    favoritButton.classList.remove("cursor-pointer", "bg-sky-600", "hover:bg-sky-700")
+                    favoritButton.classList.add("pointer-events-none", "bg-red-500", "hover:bg-red-600")
+                    favoritButton.textContent = data.message
+                }
+            })
+            .catch(error => console.error("Erreur:", error));
+        })
+        coverDiv.appendChild(bookCover);
+        bookDiv.appendChild(bookTitle);
+        bookDiv.appendChild(coverDiv);
+        bookDiv.appendChild(bookAuthor);
+        bookDiv.appendChild(favoritButton);
+        bookContainer!.appendChild(bookDiv);
+    })
+}
+
+
+// Favorites Part
+let favoritesContainer = document.querySelector(".favoritesContainer")
+
+if (favoritesContainer) {
+    callFavorites();
+}
+
+function callFavorites() {
+    favoritesContainer!.innerHTML = "";
+
+    // récupérer les books
+    fetch("../utils/update_favorites.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ requestFavorites: true }),
+        credentials: "same-origin",
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            fetchBookDetails(data.books);
+        } else {
+            let warningTitle: HTMLParagraphElement = document.createElement('h1');
+            warningTitle.textContent = "Vous n'avez aucun favoris";
+            warningTitle.classList.add("font-bold", "text-3xl")
+            let subTitle: HTMLParagraphElement = document.createElement('p');
+            subTitle.textContent = "Retourner dans 'Bibliothèque' pour commencer à ajouter des livres. 😀";
+            subTitle.classList.add("text-xl")
+            let subDiv: HTMLDivElement = document.createElement('div')
+            subDiv.classList.add("flex", "flex-col", "gap-y-3", "justify-center", "items-center", "mx-auto", "text-center", "col-span-3")
+            subDiv.appendChild(warningTitle);
+            subDiv.appendChild(subTitle);
+            favoritesContainer!.appendChild(subDiv);
+        }
+    })
+    .catch(error => console.error("Erreur lors de la récupération des favoris:", error));
+}
+
+function fetchBookDetails(bookIds) {
+    bookIds.map(bookId => 
+        fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+        .then(response => response.json())
+        .then(book => {
+            let bookTitle: HTMLParagraphElement = document.createElement('p');
+            bookTitle.textContent = book.volumeInfo.title;
+            bookTitle.classList.add("font-bold", "text-xl", "truncate", "max-w-full", "underline")
+            let bookAuthor: HTMLParagraphElement = document.createElement('p');
+            bookAuthor.textContent = book.volumeInfo.authors?.join(', ') || "Aucun auteur";
+            bookAuthor.classList.add("max-w-full", "truncate",)
+            let coverDiv: HTMLDivElement = document.createElement('div');
+            coverDiv.classList.add("w-56", "h-64");
+            let bookCover: HTMLImageElement = document.createElement('img');
+            bookCover.src = book.volumeInfo.imageLinks?.thumbnail || "https://via.placeholder.com/150";
+            bookCover.classList.add('w-full', "h-full", 'object-cover');
+            let favoritButton: HTMLParagraphElement = document.createElement("p")
+            favoritButton.textContent = "Enlever des favoris";
+            favoritButton.classList.add("text-white", "px-4", "py-2", "rounded-md", "bg-sky-600", "hover:bg-sky-700", "transition-all", "mt-2", "cursor-pointer");
+            let bookDiv: HTMLDivElement = document.createElement('div');
+            bookDiv.classList.add("flex-col", "flex", "gap-y-3", "justify-center", "items-center", "p-4", "w-96", "h-[450px]", "border" ,"rounded-lg", "border-zinc-400", "shadow-xl", "bg-gradient-to-br", "from-white", "to-zinc-100", "hover:scale-105", "transition-all", "hover:shadow-2xl")
+            
+            favoritButton.addEventListener("click", () => {
+                fetch("../utils/update_favorites.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ removeFavorite: book.id }),
+                    credentials: "same-origin",
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload()
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error("Erreur:", error));
+            })
+            coverDiv.appendChild(bookCover);
+            bookDiv.appendChild(bookTitle);
+            bookDiv.appendChild(coverDiv);
+            bookDiv.appendChild(bookAuthor);
+            bookDiv.appendChild(favoritButton);
+            favoritesContainer!.appendChild(bookDiv);
+        })
+        .catch(error => console.log(error))
+    );
+}
