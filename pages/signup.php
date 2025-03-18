@@ -7,30 +7,31 @@ include "../config/pdo.php";
 
 // Processus de SIGNUP (aidez vous du login !)
 
-// 1) On vient vérifier que le form ait été soumis en POST et que le bouton de submit ait bien été cliqué
+// On vient vérifier que le form ait été soumis en POST et que le bouton de submit ait bien été cliqué
 if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
 
-  // 2) On vient vérifier que tous les champs soient remplis
+  // On vient vérifier que tous les champs soient remplis
   if (!empty($_POST["username"]) && !empty($_POST["email"]) && !empty($_POST["password"]) && !empty($_POST["confirm-password"])) {
 
-    if (strlen($username) > 4 && strlen($username) < 24 || preg_match('/[^a-zA-Z0-9_]/', $username)) {
-    
-
-      // 3) On check ensuite que le mdp et la confirmation soient identiques 
+    // On vérifie si le username correspond aux contraintes
+    if (strlen($username) <= 4 && strlen($username) >= 24 && preg_match('/[^a-zA-Z0-9_]/', $username)) {
+      $error = "Le pseudo doit contenir entre 5 et 24 caractères et ne peut contenir que des lettres, des chiffres et des underscores";
+    }
+      // On check ensuite que le mdp et la confirmation soient identiques 
       if ($_POST["password"] === $_POST["confirm-password"]) {
 
         // On vérifie si le mot de passe rentre dans les contraintes
         if (preg_match('/^(?=.*\d)(?=.*[^a-zA-Z0-9_]).{8,}$/', $_POST["password"])) {
         
-          // 4) On vient vérifier les données que l'on récupère (pas de caractères soucieux sur le username et que l'email soit bien un email - filter_var)
+          // On vient vérifier les données que l'on récupère (pas de caractères soucieux sur le username et que l'email soit bien un email - filter_var)
           $username = htmlspecialchars($_POST["username"]);
           $email = $_POST["email"];
           $password = $_POST["password"];
 
-          // 5) Je vérifie que l'email est bien au bon format sinon erreur
+          // Je vérifie que l'email est bien au bon format sinon erreur
           if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-            // 6) On vérifie ensuite que le mail n'existe pas déjà en BDD
+            // On vérifie ensuite que le mail n'existe pas déjà en BDD
             $sql = "SELECT * FROM users WHERE email = ?";
 
             $stmt = $pdo->prepare($sql);
@@ -66,9 +67,6 @@ if (($_SERVER["REQUEST_METHOD"] === "POST") && isset($_POST["submit"])) {
       } else {
         $error = "Les mots de passe sont différents";
       }
-    } else {
-      $error = "Le pseudo doit contenir entre 5 et 24 caractères et ne peut contenir que des lettres, des chiffres et des underscores";
-    }
   } else {
     $error = "Veuillez remplir tous les champs";
   }
